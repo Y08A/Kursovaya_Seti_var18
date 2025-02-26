@@ -22,9 +22,9 @@ templates = Jinja2Templates(directory="templates")
 
 # --- Data models ---
 class Correspondence(BaseModel):
-    type: str = Field(..., example="Letter")
+    type: str = Field
     date: str = Field(..., example="2024-12-15")
-    organization_name: str = Field(..., example="OOO Navigator")
+    organization_name: str = Field
 
 
 class Organization(BaseModel):
@@ -33,29 +33,40 @@ class Organization(BaseModel):
     director: str = Field(..., example="Markin Anatolii")
 
 
+
 # --- API methods ---
-# Add correspondence
-@app.post("/add-correspondence/", response_class=RedirectResponse)
-async def add_correspondence(
-    type: str = Form(...),
-    date: str = Form(...),
-    organization_name: str = Form(...),
-):
-    correspondence = Correspondence(type=type, date=date, organization_name=organization_name)
-    await correspondence_collection.insert_one(correspondence.dict())
-    return RedirectResponse("/", status_code=303)
 
 
-# Add organization
-@app.post("/add-organization/", response_class=RedirectResponse)
-async def add_organization(
-    name: str = Form(...),
-    address: str = Form(...),
-    director: str = Form(...),
+#CREATE
+
+@app.post("/add/")
+async def add_item(
+    request: Request,
+    item_type: str = Form(...),
+    name: Optional[str] = Form(None),
+    address: Optional[str] = Form(None),
+    director: Optional[str] = Form(None),
+    correspondence_type: Optional[str] = Form(None),
+    date: Optional[str] = Form(None),
+    organization_name: Optional[str] = Form(None),
 ):
-    organization = Organization(name=name, address=address, director=director)
-    await organizations_collection.insert_one(organization.dict())
-    return RedirectResponse("/", status_code=303)
+    if item_type == "organization" and name and address and director:
+        await organizations_collection.insert_one({
+            "name": name,
+            "address": address,
+            "director": director
+        })
+    elif item_type == "correspondence" and correspondence_type and date and organization_name:
+        await correspondence_collection.insert_one({
+            "type": correspondence_type,
+            "date": date,
+            "organization_name": organization_name
+        })
+    
+    return RedirectResponse(url="/", status_code=303)
+
+
+#READ
 
 # Search combined information by organization name
 @app.get("/search/", response_class=HTMLResponse)
@@ -87,6 +98,8 @@ async def home(request: Request):
             "correspondences": correspondences,
         },
     )
+
+#UPDATE/DELETE
 
 # Delete all data by organization name
 @app.post("/delete/", response_class=RedirectResponse)

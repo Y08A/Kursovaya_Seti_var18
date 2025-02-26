@@ -126,41 +126,37 @@
 <body>
 
 <div class="container">
-    <h1>Manage Correspondence and Organizations</h1>
+    <h1>Manage Correspondence and Organizations</h1><!-- Add Correspondence / Organization -->
+    <div class="form-container">
+        <h2>Add Data</h2>
+        <form action="/add/" method="post">
+            <label>Select Type:</label>
+            <select name="item_type" required>
+                <option value="organization">Organization</option>
+                <option value="correspondence">Correspondence</option>
+            </select>
 
-    <!-- Add Correspondence -->
-    <section>
-        <h2>Add Correspondence</h2>
-        <form action="/add-correspondence/" method="post">
-            <label for="type">Type:</label>
-            <input type="text" id="type" name="type" required>
+            <div id="org-fields">
+                <label>Organization Name:</label>
+                <input type="text" name="name" name="name" required>
+                <label>Address:</label>
+                <input type="text" name="address" name="address" required>
+                <label>Director:</label>
+                <input type="text" name="director" name="director" required>
+            </div>
 
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
+            <div id="corr-fields" style="display: none;">
+                <label>Type:</label>
+                <input type="text" name="correspondence_type" name="correspondence_type" required>
+                <label>Date:</label>
+                <input type="date" name="date" name="date" required>
+                <label>Organization Name:</label>
+                <input type="text" name="organization_name" name="organization_name" required>
+            </div>
 
-            <label for="organization_name">Organization Name:</label>
-            <input type="text" id="organization_name" name="organization_name" required>
-
-            <button type="submit">Add Correspondence</button>
+            <button type="submit">Add</button>
         </form>
-    </section>
-
-    <!-- Add Organization -->
-    <section>
-        <h2>Add Organization</h2>
-        <form action="/add-organization/" method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" required>
-
-            <label for="director">Director:</label>
-            <input type="text" id="director" name="director" required>
-
-            <button type="submit">Add Organization</button>
-        </form>
-    </section>
+    </div>
 <!-- Search Form -->
     <section>
         <h2>Search by Organization Name</h2>
@@ -170,7 +166,6 @@
             <button type="submit">Search</button>
         </form>
     </section>
-
     <!-- Delete Form -->
     <section>
         <h2>Delete by Organization Name</h2>
@@ -237,6 +232,21 @@
     </section>
 
 </div>
+
+   <script>
+        document.querySelector("select[name='item_type']").addEventListener("change", function() {
+            let orgFields = document.getElementById("org-fields");
+            let corrFields = document.getElementById("corr-fields");
+
+            if (this.value === "organization") {
+                orgFields.style.display = "block";
+                corrFields.style.display = "none";
+            } else {
+                orgFields.style.display = "none";
+                corrFields.style.display = "block";
+            }
+        });
+    </script>
 
 <script>
     function confirmDelete() {
